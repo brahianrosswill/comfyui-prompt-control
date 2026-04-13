@@ -58,3 +58,40 @@ a "$1" b "$2"
 a "" b "$2"
 a "A" b "$2"
 ```
+
+## SEG: Split your prompt into named segments
+
+Syntax: `SEG(segment_name)`
+
+To help with organizing prompts, you can use the `SEG` function. For example:
+```
+This is a comic
+Top panel: $CAT. $SEG3
+Bottom panel: $DOG
+
+SEG(DOG)
+A dog chasing its
+  tail in a living room.
+SEG(CAT)
+
+a sleeping cat
+
+SEG
+The cat has orange fur with white stripes
+```
+This produces:
+```
+This is a comic
+Top panel: a sleeping cat. The cat has orange fur with white stripes
+Bottom panel: A dog chasing its
+  tail in a living room.
+```
+Unlike macros, SEG is processed *after* scheduling syntax.
+
+In this case, the first section before any `SEG` becomes the *template* and any text after a `SEG` call becomes part of that segment. Whitespace is stripped from the start and end of segments and the template.
+
+In the template, you can refer to segments by either their index (starting from 1) or the given name, prefixed with a `$SEG`, so in this example, `$SEG1` is the same as `$PANEL1`
+
+Segments can also refer to each other. Recursion will terminate, but produces weird outputs.
+
+Naming segments is optional, in which case you will have to refer to it by its index.

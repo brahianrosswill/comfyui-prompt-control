@@ -31,6 +31,7 @@ Prompt operators are processed in the following order, meaning that all features
 
 - DEF macros are expanded
 - Scheduling is expanded, and for each scheduled prompt:
+  - SEGs are processed and the template is expanded
   - The prompt is split by AND, and for each:
     - Prompts are split by COUPLE. and for each:
       - Most functions (like MASK) and cutoffs are evaluated

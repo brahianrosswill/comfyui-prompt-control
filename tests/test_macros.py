@@ -1,6 +1,8 @@
+from textwrap import dedent
+
 import pytest
 
-from prompt_control.macros import expand_macros
+from prompt_control.macros import expand_macros, expand_segs
 
 
 @pytest.mark.parametrize(
@@ -22,3 +24,45 @@ def test_macro_recursion():
     with pytest.raises(ValueError) as c:
         expand_macros("DEF(X=recurse Y) DEF(Y=recurse X) X")
     assert "Unable to resolve DEFs" in str(c.value)
+
+
+@pytest.mark.parametrize(
+    "input, output",
+    [
+        (
+            """\
+      A red $b and
+      a blue $a
+      SEG(a)
+      cat
+      SEG(b)
+
+      dog
+      SEG(c)""",
+            "A red dog and\na blue cat",
+        ),
+        (
+            """\
+    $a and $b
+    SEG(a)
+    cat, $b
+    SEG(b)
+    dog, $c
+    SEG(c)
+    tiger
+    """,
+            "cat, dog, tiger and dog, tiger",
+        ),
+        (
+            """\
+    $a
+    SEG(a)
+    a $b
+    SEG(b)
+    b $a""",
+            "a b a b $a",
+        ),
+    ],
+)
+def test_segments(input, output):
+    assert expand_segs(dedent(input)) == output

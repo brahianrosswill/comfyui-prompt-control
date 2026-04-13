@@ -2,6 +2,7 @@ import logging
 
 from comfy_api.latest import io
 
+from .macros import expand_segs
 from .prompts import encode_prompt
 
 log = logging.getLogger("comfyui-prompt-control")
@@ -29,6 +30,7 @@ class PCTextEncodeWithRange(io.ComfyNode):
         log.debug("PCTextEncode: Encoding '%s'", text)
         defaults = clip.patcher.model_options.get("x-promptcontrol.defaults", {})
         masks = clip.patcher.model_options.get("x-promptcontrol.masks", None)
+        text = expand_segs(text)
         out = encode_prompt(clip, text, start, end, defaults, masks)
         return io.NodeOutput(out)
 

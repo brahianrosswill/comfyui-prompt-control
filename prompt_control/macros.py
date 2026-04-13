@@ -4,9 +4,33 @@ from __future__ import annotations
 import logging
 import re
 
-from .utils import find_closing_paren, get_function
+from .utils import find_closing_paren, get_function, split_by_function
 
 log = logging.getLogger("comfyui-prompt-control")
+
+
+def substitute_template(template, segments):
+    def _substitute(template, segments, stack):
+        for name, value in sorted(segments):
+            value = substitute_var(value, name, "")
+            if name not in stack:
+                stack.add(name)
+                value = _substitute(value, segments, stack)
+                stack.remove(name)
+            template = substitute_var(template, name, value)
+        return template
+
+    return _substitute(template, segments, set())
+
+
+def expand_segs(text):
+    template, segments = split_by_function(text, "SEG", defaults=[""], require_args=True)
+    named_segs = [(f.args[0].strip() or f"SEG{i + 1}", c.strip()) for i, (c, f) in enumerate(segments)]
+
+    new_text = substitute_template(template, named_segs).strip()
+    if new_text != text.strip():
+        log.debug("Template expanded to: %s", new_text)
+    return new_text
 
 
 def parse_search(search):
@@ -59,6 +83,11 @@ def expand_macros(text):
     return res
 
 
+def substitute_var(text, name, replace):
+    name = re.escape(str(name))
+    return re.sub(rf"\${name}\b", replace, text)
+
+
 def substitute_defcall(text, search, replace):
     name, default_args = search
     text, defns = get_function(text, name, defaults=None, placeholder=f"DEFNCALL{name}", require_args=False)
@@ -71,10 +100,10 @@ def substitute_defcall(text, search, replace):
             paramvals = [x.strip() for x in parameters[0].split(";")]
         r = replace
         for i, v in enumerate(paramvals):
-            r = re.sub(rf"\${i + 1}\b", v, r)
+            r = substitute_var(r, i + 1, v)
 
         for i, v in enumerate(default_args):
-            r = re.sub(rf"\${i + 1}\b", v, r)
+            r = substitute_var(r, i + 1, v)
 
         text = text.replace(ph, r)
     return text
