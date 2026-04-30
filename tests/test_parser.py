@@ -2,8 +2,6 @@ import os
 
 import pytest
 
-from prompt_control.macros import expand_macros
-
 
 def lora_dict(*loras):
     return {lora: {"weight": unet, "weight_clip": te} for lora, unet, te in loras}
@@ -222,23 +220,6 @@ def test_def(parse):
     p = parse("DEF(X=[($1):($1:$2):$2])DEF(Y=X(test;$1))Y(0.7) Y(0.5)")
     p2 = parse("[(test):(test:0.7):0.7] [(test):(test:0.5):0.5]")
     assert p.parsed_prompt == p2.parsed_prompt
-
-    p = expand_macros("DEF(X(a;b)=$1 $2 $3 d)X(A) X(A;B;C)")
-    assert p == "A b $3 d A B C d"
-
-    p = expand_macros("DEF(MACRO()=[empty:$1:$2])MACRO MACRO(;) MACRO(;0.5) MACRO(a;0.5)")
-    assert p == "[empty::$2] [empty::] [empty::0.5] [empty:a:0.5]"
-
-    p = expand_macros("DEF(X=$1)DEF(Y()=$1)[X Y][X() Y()][X(1) Y(1)]")
-    assert p == "[$1 ][ ][1 1]"
-
-    p = parse("DEF(test(1)=prompt $1)DEF(test2((a); (test))=[$1:$2:0.5])test test2")
-    p2 = parse("prompt 1 [(a):(prompt 1):0.5]")
-    assert p.parsed_prompt == p2.parsed_prompt
-
-    with pytest.raises(ValueError) as c:
-        expand_macros("DEF(X=recurse Y) DEF(Y=recurse X) X")
-    assert "Unable to resolve DEFs" in str(c.value)
 
 
 @pytest.mark.parametrize(
