@@ -1,6 +1,6 @@
 # ComfyUI prompt control
 
-Control LoRA and prompt scheduling, advanced text encoding, regional prompting, and much more, through your text prompt. It generates dynamic graphs that are literally identical to handcrafted noodle soup.
+Control LoRA and prompt scheduling, advanced text encoding, regional prompting, and much more, through your text prompt. Prompt Control generates dynamic graphs that are literally identical to handcrafted noodle soup, condensing complicated workflows with dozens of nodes into simple text prompts.
 
 Prompt Control comes with `PCTextEncode`, which provides advanced text encoding with many additional features compared to ComfyUI's base `CLIPTextEncode`.
 
