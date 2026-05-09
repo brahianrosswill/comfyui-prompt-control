@@ -26,7 +26,7 @@ class PCTextEncodeWithRange(io.ComfyNode):
         )
 
     @classmethod
-    def execute(cls, clip, text, start=0.0, end=1.0) -> io.NodeOutput:  # ty: ignore[invalid-method-override]
+    def execute(cls, clip, text, start=0.0, end=1.0) -> io.NodeOutput:
         log.debug("PCTextEncode: Encoding '%s'", text)
         defaults = clip.patcher.model_options.get("x-promptcontrol.defaults", {})
         masks = clip.patcher.model_options.get("x-promptcontrol.masks", None)
@@ -51,7 +51,7 @@ class PCTextEncode(io.ComfyNode):
         )
 
     @classmethod
-    def execute(cls, clip, text) -> io.NodeOutput:  # ty: ignore[invalid-method-override]
+    def execute(cls, clip, text) -> io.NodeOutput:
         # Use the WithRange node for the range 0.0, 1.0
         return PCTextEncodeWithRange.execute(clip, text, 0.0, 1.0)
 

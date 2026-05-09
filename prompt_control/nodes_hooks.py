@@ -29,7 +29,7 @@ class PCLoraHooksFromText(io.ComfyNode):
         )
 
     @classmethod
-    def execute(cls, text) -> io.NodeOutput:  # ty: ignore[invalid-method-override]
+    def execute(cls, text) -> io.NodeOutput:
         prompt_schedule = parse_prompt_schedules(text)
         consolidated = consolidate_schedule(prompt_schedule)
         hooks = lora_hooks_from_schedule(consolidated, {})
@@ -104,7 +104,7 @@ class PCAttentionCoupleBatchNegative(io.ComfyNode):
 
     @classmethod
     @override
-    def execute(cls, positive, negative) -> io.NodeOutput:  # ty: ignore[invalid-method-override]
+    def execute(cls, positive, negative) -> io.NodeOutput:
         if len(negative) != 1:
             log.warning("Batching scheduled negatives is not supported yet")
             return io.NodeOutput(positive, negative)
