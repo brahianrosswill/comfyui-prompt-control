@@ -83,9 +83,9 @@ def expand_macros(text):
     return res
 
 
-def substitute_var(text, name, replace):
+def substitute_var(text, name, replace, boundary=r"\b"):
     name = re.escape(str(name))
-    return re.sub(rf"\${name}\b", replace, text)
+    return re.sub(rf"\${name}{boundary}", replace, text)
 
 
 def substitute_defcall(text, search, replace):
@@ -99,11 +99,12 @@ def substitute_defcall(text, search, replace):
         if parameters:
             paramvals = [x.strip() for x in parameters[0].split(";")]
         r = replace
+        end_re = r"(?![0-9])"
         for i, v in enumerate(paramvals):
-            r = substitute_var(r, i + 1, v)
+            r = substitute_var(r, i + 1, v, boundary=end_re)
 
         for i, v in enumerate(default_args):
-            r = substitute_var(r, i + 1, v)
+            r = substitute_var(r, i + 1, v, boundary=end_re)
 
         text = text.replace(ph, r)
     return text

@@ -14,6 +14,10 @@ from prompt_control.macros import expand_macros, expand_segs
             "[empty::$2] [empty::] [empty::0.5] [empty:a:0.5]",
         ),
         ("DEF(X=$1)DEF(Y()=$1)[X Y][X() Y()][X(1) Y(1)]", "[$1 ][ ][1 1]"),
+        (
+            "DEF(C_ANIMAL=cat)DEF(D_ANIMAL=dog)DEF(IT=It is a $1_ANIMAL $10_ANIMAL)IT(D) IT(C)",
+            "It is a dog $10_ANIMAL It is a cat $10_ANIMAL",
+        ),
     ],
 )
 def test_basic_macro(text, result):
