@@ -70,9 +70,8 @@ class AttentionCoupleHook(TransformerOptionsHook):
             }
         }
         self.has_negpip = False
-        # calculate later. All clones must refer to the same kv dict
-        # The type is here to shut up the type checker
-        self.kv: dict[str, list] = {"k": None, "v": None}
+        # The list will be calculated later. All clones must refer to the same kv dict
+        self.kv: dict[str, list] = {"k": None, "v": None}  # type: ignore
 
     def initialize_regions(self, base_cond, conds, fill):
         self.num_conds = len(conds) + 1
